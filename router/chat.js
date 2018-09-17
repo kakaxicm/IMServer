@@ -184,7 +184,7 @@ var chat = function (io) {
 
             // 发送图片
             if (messageBody.type == 'img') {
-                
+                vfglobal.MyLog('send img mesage');
                 var imageBuffer = messageBody.fileData;
                 var imageName = messageBody.fileName;
                 var imageType = path.extname(imageName);
@@ -194,9 +194,9 @@ var chat = function (io) {
 
                 gm(imageBuffer)
                     .size(function (err, size) {
-
+                        vfglobal.MyLog('send img mesage: onSize ' + err);
                         if(!err) {
-                            vfglobal.MyLog('获取图片尺寸成功');
+                            vfglobal.MyLog('onSieze succ');
 
                             var scale = size.width/size.height;
                             var refer = scale<1?size.height:size.width;
@@ -209,27 +209,32 @@ var chat = function (io) {
                             }
                             var width = size.width/imageScale;
                             var height = size.height/imageScale;
-
+                            vfglobal.MyLog('start write file');
                             fs.writeFile(savePath, imageBuffer, function(err) {
-                                if(err) {vfglobal.MyLog(err)}
+                                if(err) {
+                                    vfglobal.MyLog("err:"+err)
+                                }
                                 else {
+                                    vfglobal.MyLog("write file success:")
                                     message.bodies.size = {'width' : size.width, 'height' : size.height};
                                     message.bodies.fileRemotePath = "images/chatImages/" + newImageName;
                                     message.bodies.fileData = null;
                                     if (imageScale == 1) { // 图片小，不需要缩放
                                         message.bodies.thumbnailRemotePath = message.bodies.fileRemotePath;
                                         sendMessage(message, callback, imageBuffer);
+                                        vfglobal.MyLog("write file success: no scale")
                                     }
                                     else  {
                                         var index = imageName.indexOf('.');
                                         var length = imageName.length;
                                         var type = imageName.substring(index + 1, length);
+                                        vfglobal.MyLog("write file success: scale smaller")
                                         gm(imageBuffer)
                                             .resize(width, height)
                                             .toBuffer(type, function (err, buffer) {
 
                                                 fs.writeFile("./public/images/chatImages/s_" + newImageName, buffer, function (err) {
-
+                                                    vfglobal.MyLog("write file success: scale smaller write :" + err)
                                                     if (!err) {
                                                         message.bodies.thumbnailRemotePath = "images/chatImages/s_" + newImageName;
                                                         sendMessage(message, callback, buffer);
