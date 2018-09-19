@@ -4,7 +4,8 @@ var request =  require('./request.js');
 var fs = require('fs');
 var path = require('path');
 var videoChat = require('./videoChat');
-var gm = require('gm').subClass({imageMagick: true}) // https://github.com/aheckmann/gm/issues/455
+// var gm = require('gm').subClass({imageMagick: true}) // https://github.com/aheckmann/gm/issues/455
+var gm = require('gm').subClass({graphicsMagick: true})
 // var pub = vfglobal.redis.createClient({
 //         host: '192.168.0.208',
 //         port: 6379
